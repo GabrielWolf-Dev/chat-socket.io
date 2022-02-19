@@ -30,14 +30,43 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+        const name = prompt('Qual é o seu nome?');
 
-        socket.on('clientConnect', function(msg) { 
-            console.log(msg);
+        const messages = document.getElementById('messages');
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if(input.value){
+                socket.emit('chat message', {
+                    name,
+                    msg: input.value,
+                });
+
+                input.value = '';
+                alert('Mensagem enviada com sucesso!');
+            }
         });
 
-        socket.on('newUserClient', function(msg) {
-            console.log(msg);
-        });
+        socket.on('chat message', obj => {
+            if(obj.name === name){
+                const item = document.createElement('li');
+                item.textContent = obj.name + ': ' + obj.msg;
+                messages.appendChild(item);
+
+                item.style.backgroundColor = 'gray';
+                window.scrollTo(0, document.body.scrollHeight);
+            } else {
+                const item = document.createElement('li');
+                item.textContent = obj.name + ': ' + obj.msg;
+                messages.appendChild(item);
+
+                item.style.backgroundColor = 'white';
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+        })
     </script>
 </body>
 </html>
