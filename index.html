@@ -32,6 +32,17 @@
         const socket = io();
         const name = prompt('Qual é o seu nome?');
 
+        socket.emit('new user', name);
+
+        socket.on('new user', (data) => {
+            if(data.success){
+                alert('Bem vindo ao nosso Chat ' + name + '!');
+            } else {
+                alert('Já existe um usuário com este nome no momento...');
+                window.location.href = '/'; // Previnir o loop infinito
+            }
+        });
+
         const messages = document.getElementById('messages');
         const form = document.getElementById('form');
         const input = document.getElementById('input');

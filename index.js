@@ -7,6 +7,7 @@ const server = http.createServer(app);
 const io = socket(server);
 
 const users = [];
+const socketIds = [];
 
 
 app.get('/', (req, res) => {
@@ -16,10 +17,36 @@ app.get('/', (req, res) => {
 
 
 io.on('connection',(socket)=>{ // o parâmetro "socket" serve para eu rastrear o usuário em questão
-    console.log('Conectado(Servidor)');
+    //console.log('Conectado(Servidor)');
+
+    socket.on('new user', (data) => {
+        if(users.indexOf(data) !== -1){
+            socket.emit('new user', { success: false });
+        } else {
+            users.push(data);
+            socketIds.push(socket.id);
+
+            socket.emit('new user', { success: true });
+        }
+    });
 
     socket.on('chat message', (obj) => {
-        io.emit('chat message', obj); // Reenvinado pra validar no front
+        const isUserConnected = users.indexOf(obj.name) !== -1;
+        const preventManipulationUser = users.indexOf(obj.name) == socketIds.indexOf(socket.id); // Só o back tem acesso ao socket.id
+
+        if(isUserConnected && preventManipulationUser){
+            io.emit('chat message', obj); // Reenvinado pra validar no front
+        } else {
+            console.error('Erro: Você não tem permissão para executar a ação');
+        }
+    });
+
+    socket.on('disconnect', () => {
+        let id = socketIds.indexOf(socket.id);
+        socketIds.splice(id, 1);
+        const userDeleted = users.splice(id, 1);
+
+        console.log('O usuário ' + userDeleted + ' desconectou do chat');
     });
 });
 
