@@ -1,0 +1,17 @@
+{
+  "name": "chat-socket.io",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/GabrielWolf-Dev/chat-socket.io.git",
+  "author": "Gabriel Wolf <65361452+GabrielWolf-Dev@users.noreply.github.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "yarn nodemon ./index.js"
+  },
+  "dependencies": {
+    "add": "^2.0.6",
+    "express": "^4.17.3",
+    "socket.io": "^4.4.1",
+    "yarn": "^1.22.17"
+  }
+}
